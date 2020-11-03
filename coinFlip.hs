@@ -23,10 +23,10 @@ get ::Board -> Coor -> Square
 get (Board grid _ _) (x, y) = grid !! (x + y * 3)
 
 set :: Board -> Coor -> Square -> Board
-set (Board grid _ _) (x, y) color 
-    | x < 0 || x > 2 = (Board grid)
-    | y < 0 || y > 2 = (Board grid)
-    | otherwise = Board $ take c grid ++ color:drop (c + 1) grid 
+set board@(Board grid width height) (x, y) color 
+    | x < 0 || x > 2 = board
+    | y < 0 || y > 2 = board
+    | otherwise = Board (take c grid ++ color:drop (c + 1) grid ) width height
     where
         c = (x + y * 3)
 
@@ -37,7 +37,7 @@ coinFlip :: Board -> Coor -> Board
 coinFlip board (x, y) = foldr (\c b -> flipOne b c) board ([(x1,y1) | x1 <-[x-1..x+1], y1 <- [y-1..y+1], x == x1 || y == y1])
 
 complete :: Board
-complete = Board $ replicate 9 Black
+complete = Board (replicate 9 Black) 3 3
 
 book :: Board
 book = foldr (\x y -> flipOne y x) complete [(1,0), (2,0), (0,2), (2,2)]
