@@ -11,16 +11,19 @@ instance Show Square where
     show Black = "█"
 
 instance Show Board where
-    show (Board x) = foldr (\x y-> show x ++ show x ++ y) "\n" (take 3 x) ++
+    show (Board x _ _) = foldr (\x y-> show x ++ show x ++ y) "\n" (take 3 x) ++
         foldr (\x y-> show x ++ show x ++ y) "\n" (take 3 (drop 3 x)) ++
         foldr (\x y-> show x ++ show x ++ y) "\n" (take 3 (drop 6 x))
 
-data Board = Board [Square]
+data Board = Board [Square] Int Int
+
+width (Board _ width _) = width
+
 get ::Board -> Coor -> Square
-get (Board grid) (x, y) = grid !! (x + y * 3)
+get (Board grid _ _) (x, y) = grid !! (x + y * 3)
 
 set :: Board -> Coor -> Square -> Board
-set (Board grid) (x, y) color 
+set (Board grid _ _) (x, y) color 
     | x < 0 || x > 2 = (Board grid)
     | y < 0 || y > 2 = (Board grid)
     | otherwise = Board $ take c grid ++ color:drop (c + 1) grid 
@@ -40,7 +43,7 @@ book :: Board
 book = foldr (\x y -> flipOne y x) complete [(1,0), (2,0), (0,2), (2,2)]
 
 isDone :: Board -> Bool
-isDone (Board grid) = all (== Black) grid
+isDone (Board grid _ _) = all (== Black) grid
 
 allCoor :: [Coor]
 allCoor = [(x,y) | x <- [0..2] , y <- [0..2]]
