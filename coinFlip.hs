@@ -81,12 +81,18 @@ test = (Queue [] [1])
 instance (Show a) => Show (Queue a) where
     show (Queue ein eout) = show (eout ++ (reverse ein))
 
+
+solveBoard :: Board -> String
+solveBoard b = solve (Queue [] [([], b)])
 --solve :: [Board] -> String
 --solve :: (Ord a, Num a, Show a) => [([Coor], Board)] -> [Char]
-solve :: [([Coor], Board)] -> [Char]
-solve ((coors, board): boards)
+solve :: (Queue ([Coor], Board)) -> [Char]
+solve (q)
     |depth >= 10 = "Max Depth"
     |isDone board = show coors
-    |otherwise = solve (drop 1 boards ++ map (\x -> (x:coors, coinFlip board x)) (allCoor board))
+    |otherwise = solve (foldr (\x y-> enqueue y x) nextQ $ map (\x -> (x:coors, coinFlip board x)) (allCoor board))
     where
         depth = length $ coors
+        (nextQ, current) = dequeue q
+        coors = fst current
+        board = snd current
