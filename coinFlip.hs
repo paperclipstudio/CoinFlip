@@ -50,7 +50,7 @@ complete x = Board (replicate (x*x) Black) x x
 
 book :: Board
 book2 :: Board
-book2 = foldr (\x y -> coinFlip y x) (complete 5) [(mod a 5,mod b 5) | a <- [1..15], b <- [4..20]]
+book2 = foldr (\x y -> coinFlip y x) (complete 5) [(mod a 5,mod b 5) | a <- [1..12], b <- [4..19]]
 
 book = foldr (\x y -> flipOne y x) (complete 3) [(1,0), (2,0), (0,2), (2,2)]
 
@@ -90,9 +90,14 @@ solve :: (Queue ([Coor], Board)) -> [Char]
 solve (q)
     |depth >= 10 = "Max Depth"
     |isDone board = show coors
-    |otherwise = solve (foldr (\x y-> enqueue y x) nextQ $ map (\x -> (x:coors, coinFlip board x)) (allCoor board))
+    |otherwise = solve (foldr (\x y-> enqueue y x) nextQ $ nextBoards)
     where
         depth = length $ coors
         (nextQ, current) = dequeue q
         coors = fst current
         board = snd current
+        lastMoveValue = if coors == [] then 9999 else moveValue board $ coors !! 0
+        nextBoards = [(x:coors, coinFlip board x)| x <- (allCoor board), (moveValue board x) < lastMoveValue]
+
+moveValue :: Board -> Coor -> Int
+moveValue b (x, y) = x + y *(width b)
