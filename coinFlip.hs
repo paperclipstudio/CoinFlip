@@ -1,3 +1,5 @@
+
+
 data Square = Black | White
     deriving Eq
 flipSquare :: Square -> Square
@@ -57,6 +59,27 @@ isDone (Board grid _ _) = all (== Black) grid
 
 allCoor :: Board -> [Coor]
 allCoor (Board _ width height)= [(x,y) | x <- [0..(width-1)], y <- [0..(height-1)]]
+
+
+
+data Queue a = Queue [a] [a]
+
+enqueue :: Queue a -> a -> Queue a
+enqueue (Queue ein eout) e = (Queue (e:ein) eout) 
+
+dequeue :: Queue a -> (Queue a, a)
+dequeue (Queue [] []) = error "can't dequeue empty"
+dequeue (Queue ein []) = dequeue (Queue [] (reverse ein))
+dequeue (Queue ein (e:out)) = ((Queue ein out), e)
+
+isEmpty :: Queue a -> Bool
+isEmpty (Queue [] []) = True
+isEmpty _ = False
+
+test = (Queue [] [1])
+
+instance (Show a) => Show (Queue a) where
+    show (Queue ein eout) = show (eout ++ (reverse ein))
 
 --solve :: [Board] -> String
 --solve :: (Ord a, Num a, Show a) => [([Coor], Board)] -> [Char]
